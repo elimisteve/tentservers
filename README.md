@@ -47,6 +47,6 @@ To facilitate the programmatic discovery of new Tent.io servers.
 
 This service is running on Google App Engine, which shuts down apps
 after they've received no queries for a while.  In your code -- that
-is, the code of your Tent.io server that checks
+is, the code you may add to your Tent server that checks
 <http://tentservers.appspot.com/tents> for new Tent servers -- be sure
 that timeouts won't blow anything up.
