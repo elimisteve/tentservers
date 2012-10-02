@@ -4,8 +4,9 @@ TentServers is a directory of [Tent.io](https://tent.io) servers
 
 ## Usage
 
-To add your Tent.io server to the directory, run the following command
-(or the programmatic equivalent):
+To add your Tent.io server to the directory, run _something like_ the
+following command (or the programmatic equivalent); be sure to
+customize the `author` and `url` values:
 
     curl -X POST -d '{"author": "My Name", "url": "https://mytent.mydomain.com"}' http://tentservers.appspot.com/tents
 
