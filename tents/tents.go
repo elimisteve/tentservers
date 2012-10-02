@@ -19,6 +19,8 @@ type TentServer struct {
 	AddedAt time.Time `json:"added_at"`
 }
 
+const FAKE_URL = "https://mytent.mydomain.com"
+
 func init() {
 	http.HandleFunc("/", root)
 	http.HandleFunc("/tents", tents)
@@ -79,7 +81,11 @@ func postTents(w http.ResponseWriter, r *http.Request) {
 	}
 	// Store new TentServer
 	if t.URL == "" {
-		writeError(w, fmt.Errorf("Error: URL cannot be blank"))
+		writeError(w, fmt.Errorf("Error: URL cannot be blank\n"))
+		return
+	}
+	if t.URL == FAKE_URL {
+		writeError(w, fmt.Errorf("Are you _sure_ that's the right URL?\n"))
 		return
 	}
 	key := datastore.NewIncompleteKey(c, "TentServer", nil)
