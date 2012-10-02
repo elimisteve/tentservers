@@ -4,23 +4,23 @@
 package tentserver
 
 import (
+	"appengine"
+	"appengine/datastore"
 	"encoding/json"
-    "appengine"
-    "appengine/datastore"
 	"io/ioutil"
-    "net/http"
+	"net/http"
 	"time"
 )
 
 type TentServer struct {
-	Author     string     `json:"author"`
-	URL        string     `json:"url"`
-	CreatedAt  time.Time  `json:"created_at"`
+	Author  string    `json:"author"`
+	URL     string    `json:"url"`
+	AddedAt time.Time `json:"added_at"`
 }
 
 func init() {
-    http.HandleFunc("/", root)
-    http.HandleFunc("/tents", tents)
+	http.HandleFunc("/", root)
+	http.HandleFunc("/tents", tents)
 }
 
 func root(w http.ResponseWriter, r *http.Request) {
@@ -38,14 +38,14 @@ func tents(w http.ResponseWriter, r *http.Request) {
 
 func getTents(w http.ResponseWriter, r *http.Request) {
 	// Grab all TentServer objects from DB
-    c := appengine.NewContext(r)
-    q := datastore.NewQuery("TentServer")
-    tents := []TentServer{}
-    _, err := q.GetAll(c, &tents)
+	c := appengine.NewContext(r)
+	q := datastore.NewQuery("TentServer")
+	tents := []TentServer{}
+	_, err := q.GetAll(c, &tents)
 	if err != nil {
 		writeError(w, err)
-        return
-    }
+		return
+	}
 	// Marshall all TentServers to JSON
 	jsonStr, err := json.Marshal(&tents)
 	if err != nil {
@@ -57,8 +57,8 @@ func getTents(w http.ResponseWriter, r *http.Request) {
 }
 
 func postTents(w http.ResponseWriter, r *http.Request) {
-    c := appengine.NewContext(r)
-	t := TentServer{CreatedAt: time.Now()}
+	c := appengine.NewContext(r)
+	t := TentServer{AddedAt: time.Now()}
 	// Read POSTed body (should be JSON)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -67,17 +67,18 @@ func postTents(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 	// Unmarshal JSON into TentServer var
-    if err := json.Unmarshal(body, &t); err != nil {
+	if err := json.Unmarshal(body, &t); err != nil {
 		writeError(w, err)
 		return
 	}
 	// Store new TentServer
 	key := datastore.NewIncompleteKey(c, "TentServer", nil)
-    if _, err := datastore.Put(c, key, &t); err != nil {
+	if _, err := datastore.Put(c, key, &t); err != nil {
 		writeError(w, err)
-        return
-    }
-	// Return new list of TentServer so user can see theirs was added
+		return
+	}
+	// Return new list of TentServer so user can verify that theirs
+	// was added
 	getTents(w, r)
 }
 
