@@ -1,4 +1,4 @@
-application: tentserver
+application: tentservers
 version: 1
 runtime: go
 api_version: go1
