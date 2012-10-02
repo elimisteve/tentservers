@@ -8,7 +8,8 @@ To add your Tent.io server to the directory, run _something like_ the
 following command (or the programmatic equivalent); be sure to
 customize the `author` and `url` values:
 
-    curl -X POST -d '{"author": "My Name", "url": "https://mytent.mydomain.com"}' http://tentservers.appspot.com/tents
+    curl -X POST -d '{"author": "My Name", "url": "https://mytent.mydomain.com"}' \
+    http://tentservers.appspot.com/tents
 
 If it worked, the response will be a JSONified list of existing
 Tent.io servers, including the one you just added.  Otherwise, you'll
