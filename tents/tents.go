@@ -28,7 +28,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Write([]byte("Nothing here yet! Maybe you meant to visit /tents?\n"))
 	format := `{"author": "My Name", "url": "https://mytent.mydomain.com"}`
-	url := "http://tentservers.appspot.com"
+	url := "http://tentservers.appspot.com/tents"
 	str := fmt.Sprintf("Post like this:\ncurl -X POST -d '%s' %s\n", format, url)
 	w.Write([]byte(str))
 }
