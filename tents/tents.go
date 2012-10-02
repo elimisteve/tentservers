@@ -7,6 +7,7 @@ import (
 	"appengine"
 	"appengine/datastore"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -24,7 +25,12 @@ func init() {
 }
 
 func root(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Write([]byte("Nothing here yet! Maybe you meant to visit /tents?\n"))
+	format := `{"author": "My Name", "url": "https://mytent.mydomain.com"}`
+	url := "http://tentservers.appspot.com"
+	str := fmt.Sprintf("Post like this:\ncurl -X POST -d '%s' %s\n", format, url)
+	w.Write([]byte(str))
 }
 
 func tents(w http.ResponseWriter, r *http.Request) {
@@ -72,6 +78,10 @@ func postTents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Store new TentServer
+	if t.URL == "" {
+		writeError(w, fmt.Errorf("Error: URL cannot be blank"))
+		return
+	}
 	key := datastore.NewIncompleteKey(c, "TentServer", nil)
 	if _, err := datastore.Put(c, key, &t); err != nil {
 		writeError(w, err)
