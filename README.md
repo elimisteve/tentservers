@@ -5,7 +5,7 @@ TentServers is a directory of [Tent.io](https://tent.io) servers
 ## Usage
 
 To add your Tent.io server to the directory, run the following command
-(or the following programmatic equivalent):
+(or the programmatic equivalent):
 
     curl -X POST -d '{"author": "My Name", "url": "https://mytent.mydomain.com"}' http://tentservers.appspot.com/tents
 
@@ -36,3 +36,13 @@ To facilitate the programmatic discovery of new Tent.io servers.
   * Which of the Tent.io protocol features are supported, and which
     aren't?  (This could even be used as a sort of external unit
     testing suite.)
+
+* In short: WebHooks. This would allow servers to subscribe to be
+  notified when this directory is updated.
+
+
+## Gotchas
+
+This service is running on Google App Engine, which shuts down apps
+after they've received no queries for a while.  In your code, be sure
+that timeouts won't blow anything up.
