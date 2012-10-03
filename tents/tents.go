@@ -19,7 +19,16 @@ type TentServer struct {
 	AddedAt time.Time `json:"added_at"`
 }
 
-const FAKE_URL = "https://mytent.mydomain.com"
+type SecretKey struct {
+	Key string `json:"key"`
+}
+
+const (
+	FAKE_URL   = "https://mytent.mydomain.com"
+	SECRET_KEY = ""
+	ABUSE_MSG  = "\nThis site has been abused! Ask ^elimisteve how " +
+		"to get your server listed on this directory.\n"
+)
 
 func init() {
 	http.HandleFunc("/", root)
@@ -29,10 +38,7 @@ func init() {
 func root(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Write([]byte("Nothing here yet! Maybe you meant to visit /tents?\n"))
-	format := `{"author": "My Name", "url": "https://mytent.mydomain.com"}`
-	url := "http://tentservers.appspot.com/tents"
-	str := fmt.Sprintf("Post like this:\ncurl -X POST -d '%s' %s\n", format, url)
-	w.Write([]byte(str))
+	w.Write([]byte(ABUSE_MSG))
 }
 
 func tents(w http.ResponseWriter, r *http.Request) {
@@ -74,6 +80,10 @@ func postTents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+	if err := checkAuth(body); err != nil {
+		writeError(w, err)
+		return
+	}
 	// Unmarshal JSON into TentServer var
 	if err := json.Unmarshal(body, &t); err != nil {
 		writeError(w, err)
@@ -93,12 +103,23 @@ func postTents(w http.ResponseWriter, r *http.Request) {
 		writeError(w, err)
 		return
 	}
-	// Return new list of TentServer so user can verify that theirs
-	// was added
-	getTents(w, r)
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Write([]byte("Server Added\n"))
 }
 
 func writeError(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	http.Error(w, err.Error(), http.StatusInternalServerError)
+}
+
+func checkAuth(body []byte) error {
+	// Security check: Unmarshal JSON into SecretKey var
+	key := SecretKey{}
+	if err := json.Unmarshal(body, &key); err != nil {
+		return err
+	}
+	if key.Key != SECRET_KEY {
+		return fmt.Errorf(ABUSE_MSG)
+	}
+	return nil
 }
